@@ -1,5 +1,6 @@
 package com.example.test_program;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -44,43 +45,68 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Ви не вказали імя користувача", Toast.LENGTH_SHORT).show();
             return;
         }else{
-            convertJsonGithub(githubUserName.getText().toString());
+            MyAsyncTask task = new MyAsyncTask(userName, userImage);
+            task.convertJSON(githubUserName.getText().toString());
         }
     }
 
-    private void convertJsonGithub(String nameSearchUser){
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(GITHUB_API)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+    public class MyAsyncTask extends AsyncTask<String, Void, UserGithub>{
 
-        QueryGithub queryGithub = retrofit.create(QueryGithub.class);
-        Call<UserGithub> call = queryGithub.getInfoUser(nameSearchUser);
-        call.enqueue(new Callback<UserGithub>() {
+        private TextView userName;
+        private ImageView imageUser;
 
-            @Override
-            public void onResponse(@NonNull Call<UserGithub> call, @NonNull Response<UserGithub> response) {
-                if (response.code() == 200 && response.body() != null) {
-                    UserGithub user = response.body();
+        public MyAsyncTask(TextView UserName, ImageView ImageUser){
+            userName = UserName;
+            imageUser = ImageUser;
+        }
 
-                    userName.setText(user.getLogin());
+        @Override
+        protected UserGithub doInBackground(String... strings) {
+            return convertJSON(strings[0]);
+        }
 
-                    Glide
-                            .with(getApplicationContext())
-                            .load(user.getAvatar_url())
-                            .error(R.drawable.ic_launcher_background)
-                            .into(userImage);
-                }else{
-                    Toast.makeText(MainActivity.this, "Проблеми з сервером або невірне імя користувача", Toast.LENGTH_SHORT).show();
+        private UserGithub convertJSON(String user) {
+
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(GITHUB_API)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+            QueryGithub queryGithub = retrofit.create(QueryGithub.class);
+            Call<UserGithub> call = queryGithub.getInfoUser(user);
+            call.enqueue(new Callback<UserGithub>() {
+
+                @Override
+                public void onResponse(@NonNull Call<UserGithub> call, @NonNull Response<UserGithub> response) {
+                    if (response.code() == 200 && response.body() != null) {
+                        onPostExecute(response.body());
+                    }else{
+                        Toast.makeText(MainActivity.this, "Проблеми з сервером або невірне імя користувача", Toast.LENGTH_SHORT).show();
+                    }
                 }
+
+                @Override
+                public void onFailure(@NonNull Call<UserGithub> call, @NonNull Throwable throwable) { }
+            });
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(UserGithub user) {
+
+            if (user != null) {
+                userName.setText(user.getLogin());
+
+                Glide
+                        .with(getApplicationContext())
+                        .load(user.getAvatar_url())
+                        .error(R.drawable.ic_launcher_background)
+                        .into(imageUser);
+            }else{
+                Toast.makeText(MainActivity.this, "Не получилось отримати інформацію про користувача", Toast.LENGTH_SHORT).show();
             }
-
-            @Override
-            public void onFailure(@NonNull Call<UserGithub> call, @NonNull Throwable throwable) { }
-        });
-
-
+        }
     }
 
 }
