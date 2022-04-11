@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">test_program</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="my_text">MY TEXT</string>
+    <string name="search">Search</string>
+</resources>
