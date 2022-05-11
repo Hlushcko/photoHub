@@ -1,4 +1,6 @@
-package com.example.test_program;
+package com.example.test_program.json.request_server;
+
+import com.example.test_program.json.parsing_class.UserGithub;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

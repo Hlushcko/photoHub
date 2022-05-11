@@ -13,7 +13,7 @@
         android:theme="@style/Theme.Test_program">
 
         <activity
-            android:name=".MainActivity"
+            android:name=".user_interface.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

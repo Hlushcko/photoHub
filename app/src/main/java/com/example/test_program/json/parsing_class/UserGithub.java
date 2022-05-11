@@ -1,4 +1,4 @@
-package com.example.test_program;
+package com.example.test_program.json.parsing_class;
 
 public class UserGithub {
 
