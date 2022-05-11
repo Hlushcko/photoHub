@@ -34,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onChanged(UserGithub userGithub) {
                 setImage(userGithub);
-                userName.setText(userGithub.getLogin());
             }
         });
     }
